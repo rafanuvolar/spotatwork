@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    document.getElementById("set-password-form").addEventListener("submit", async function (event) {
+    const setPasswordForm = document.getElementById("set-password-form");
+
+    setPasswordForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const newPassword = document.getElementById("new-password").value.trim();
@@ -20,8 +22,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+        const submitButton = setPasswordForm.querySelector("button");
+        submitButton.disabled = true;
+
         try {
-            const { data, error } = await supabase.auth.updateUser({
+            const { error } = await supabase.auth.updateUser({
                 password: newPassword
             });
 
@@ -31,11 +36,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
-            alert("Password successfully changed. Please log in again.");
-            window.location.href = "index.html"; // Redirige a la página de login
+            alert("Password successfully changed. Now access the mobile app.");
         } catch (err) {
             console.error("Unexpected error:", err);
             alert("An unexpected error occurred. Please try again.");
+        } finally {
+            submitButton.disabled = false;
         }
     });
 });
