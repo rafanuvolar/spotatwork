@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
-            // Ocultar formulario y mostrar mensaje de éxito
             setPasswordForm.style.display = "none";
             successMessage.classList.remove("hidden");
 

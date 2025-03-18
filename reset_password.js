@@ -2,16 +2,16 @@ import { supabase } from './supabaseV2.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const resetForm = document.getElementById("reset-form");
+    const successMessage = document.getElementById("success-message");
 
     resetForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         const emailInput = document.getElementById("email");
         const email = emailInput.value.trim();
 
-        // Validar que el email contenga un '@' y siga el formato correcto
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert("Please enter a valid email address.");
+            showError("Please enter a valid email address.");
             return;
         }
 
@@ -25,16 +25,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (error) {
                 console.error("Reset password error:", error);
-                alert("Error: " + error.message);
+                showError("Error: " + error.message);
                 return;
             }
 
-            alert("Check your email to reset your password.");
+            resetForm.style.display = "none";
+            successMessage.classList.remove("hidden");
         } catch (err) {
             console.error("Unexpected error:", err);
-            alert("An unexpected error occurred. Please try again.");
+            showError("An unexpected error occurred. Please try again.");
         } finally {
             submitButton.disabled = false;
         }
     });
+
+    function showError(message) {
+        const errorDiv = document.getElementById("error-message");
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+    }
 });
