@@ -1,3 +1,4 @@
+import { supabase } from './supabaseV2.js';
 document.addEventListener("DOMContentLoaded", async function () {
     const setPasswordForm = document.getElementById("set-password-form");
 

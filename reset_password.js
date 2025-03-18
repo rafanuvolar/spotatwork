@@ -1,3 +1,5 @@
+import { supabase } from './supabaseV2.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     const resetForm = document.getElementById("reset-form");
 
@@ -18,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: "https://rafanuvolar.github.io/spotatwork/set-password.html"
+                redirectTo: "https://rafanuvolar.github.io/spotatwork/set_password.html"
             });
 
             if (error) {
