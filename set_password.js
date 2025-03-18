@@ -1,6 +1,8 @@
 import { supabase } from './supabaseV2.js';
+
 document.addEventListener("DOMContentLoaded", async function () {
     const setPasswordForm = document.getElementById("set-password-form");
+    const successMessage = document.getElementById("success-message");
 
     setPasswordForm.addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -37,7 +39,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
-            alert("Password successfully changed. Now access the mobile app.");
+            // Ocultar formulario y mostrar mensaje de éxito
+            setPasswordForm.style.display = "none";
+            successMessage.classList.remove("hidden");
+
         } catch (err) {
             console.error("Unexpected error:", err);
             alert("An unexpected error occurred. Please try again.");
