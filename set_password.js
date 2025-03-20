@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         messageBox.innerHTML = "";
         messageBox.classList.remove("success", "error");
-        messageBox.style.display = "none";  // Ocultar antes de mostrar
+        messageBox.style.display = "none";  
 
         if (!newPassword.value.trim() || !confirmPassword.value.trim()) {
             showMessage("Please fill in both password fields.", "error");
