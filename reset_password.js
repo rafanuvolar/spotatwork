@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         messageBox.innerHTML = "";
         messageBox.classList.remove("success", "error");
-        messageBox.style.display = "none";  
+        messageBox.style.display = "none";
 
         function showMessage(message, type) {
             messageBox.innerHTML = message;
@@ -22,21 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
         if (!emailRegex.test(email)) {
             showMessage("Please enter a valid email address.", "error");
-            shakeInput(emailInput, messageBox);
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('profiles')  
-            .select('email')
-            .eq('email', email)
-            .single();
-
-        if (error || !data) {
-            showMessage("This email does not exist in our records.", "error");
             shakeInput(emailInput, messageBox);
             return;
         }
@@ -46,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: "http://localhost:8000/set_password.html"
+                redirectTo: "https://rafanuvolar.github.io/spotatwork/set_password.html"
             });
 
             if (error) {
@@ -55,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            showMessage("Check your email to reset your password.", "success");
+            showMessage("If this email exists, you will receive a reset link.", "success");
         } catch (err) {
             showMessage("An unexpected error occurred.", "error");
         } finally {
