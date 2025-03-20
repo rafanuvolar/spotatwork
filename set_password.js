@@ -1,27 +1,35 @@
 import { supabase } from './supabaseV2.js';
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
     const setPasswordForm = document.getElementById("set-password-form");
-    const successMessage = document.getElementById("success-message");
+    const messageBox = document.getElementById("set-password-message");
 
     setPasswordForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const newPassword = document.getElementById("new-password").value.trim();
-        const confirmPassword = document.getElementById("confirm-password").value.trim();
+        const newPassword = document.getElementById("new-password");
+        const confirmPassword = document.getElementById("confirm-password");
 
-        if (!newPassword || !confirmPassword) {
-            alert("Please fill in both password fields.");
+        messageBox.innerHTML = "";
+        messageBox.classList.remove("success", "error");
+        messageBox.style.display = "none";  // Ocultar antes de mostrar
+
+        if (!newPassword.value.trim() || !confirmPassword.value.trim()) {
+            showMessage("Please fill in both password fields.", "error");
+            shakeInput(newPassword);
+            shakeInput(confirmPassword);
             return;
         }
 
-        if (newPassword.length < 8) {
-            alert("Password must be at least 8 characters long.");
+        if (newPassword.value.length < 8) {
+            showMessage("Password must be at least 8 characters long.", "error");
+            shakeInput(newPassword);
             return;
         }
 
-        if (newPassword !== confirmPassword) {
-            alert("Passwords do not match.");
+        if (newPassword.value !== confirmPassword.value) {
+            showMessage("Passwords do not match.", "error");
+            shakeInput(confirmPassword);
             return;
         }
 
@@ -30,23 +38,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         try {
             const { error } = await supabase.auth.updateUser({
-                password: newPassword
+                password: newPassword.value
             });
 
             if (error) {
-                console.error("Password update error:", error);
-                alert("Error: " + error.message);
+                showMessage("Error: " + error.message, "error");
+                shakeInput(newPassword);
                 return;
             }
 
-            setPasswordForm.style.display = "none";
-            successMessage.classList.remove("hidden");
-
+            showMessage("Password successfully changed. Now access the mobile app.", "success");
         } catch (err) {
-            console.error("Unexpected error:", err);
-            alert("An unexpected error occurred. Please try again.");
+            showMessage("An unexpected error occurred.", "error");
         } finally {
             submitButton.disabled = false;
         }
     });
+
+    function showMessage(message, type) {
+        messageBox.innerHTML = message;
+        messageBox.classList.add(type);
+        messageBox.style.display = "block";
+    }
+
+    function shakeInput(inputField) {
+        inputField.classList.add("error-shake");
+        setTimeout(() => inputField.classList.remove("error-shake"), 500);
+    }
 });

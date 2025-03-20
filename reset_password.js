@@ -2,16 +2,42 @@ import { supabase } from './supabaseV2.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const resetForm = document.getElementById("reset-form");
-    const successMessage = document.getElementById("success-message");
+    const messageBox = document.getElementById("reset-message");
 
     resetForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         const emailInput = document.getElementById("email");
         const email = emailInput.value.trim();
 
+        messageBox.innerHTML = "";
+        messageBox.classList.remove("success", "error");
+        messageBox.style.display = "none";  
+
+        function showMessage(message, type) {
+            messageBox.innerHTML = message;
+            messageBox.classList.add(type);
+            messageBox.style.display = "block";
+            messageBox.style.visibility = "visible";
+            messageBox.style.opacity = "1";
+        }
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
         if (!emailRegex.test(email)) {
-            showError("Please enter a valid email address.");
+            showMessage("Please enter a valid email address.", "error");
+            shakeInput(emailInput, messageBox);
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('profiles')  
+            .select('email')
+            .eq('email', email)
+            .single();
+
+        if (error || !data) {
+            showMessage("This email does not exist in our records.", "error");
+            shakeInput(emailInput, messageBox);
             return;
         }
 
@@ -20,28 +46,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: "https://rafanuvolar.github.io/spotatwork/set_password.html"
+                redirectTo: "http://localhost:8000/set_password.html"
             });
 
             if (error) {
-                console.error("Reset password error:", error);
-                showError("Error: " + error.message);
+                showMessage("Error: " + error.message, "error");
+                shakeInput(emailInput, messageBox);
                 return;
             }
 
-            resetForm.style.display = "none";
-            successMessage.classList.remove("hidden");
+            showMessage("Check your email to reset your password.", "success");
         } catch (err) {
-            console.error("Unexpected error:", err);
-            showError("An unexpected error occurred. Please try again.");
+            showMessage("An unexpected error occurred.", "error");
         } finally {
             submitButton.disabled = false;
         }
     });
 
-    function showError(message) {
-        const errorDiv = document.getElementById("error-message");
-        errorDiv.textContent = message;
-        errorDiv.style.display = "block";
+    function shakeInput(inputField, messageBox) {
+        inputField.classList.add("error-shake");
+        messageBox.classList.add("error-shake");
+        setTimeout(() => {
+            inputField.classList.remove("error-shake");
+            messageBox.classList.remove("error-shake");
+        }, 500);
     }
 });
